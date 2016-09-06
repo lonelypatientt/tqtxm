@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" 
+	xmlns="http://java.sun.com/xml/ns/javaee" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
+	http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+	<!--欢迎界面-->
+  <welcome-file-list>
+    <welcome-file>view/login.jsp</welcome-file>
+  </welcome-file-list>
+  
+  <!--servlet配置-->
+  <servlet>
+  <servlet-name>mainServlet</servlet-name>
+  <servlet-class>com.web.controller.MainServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+  <servlet-name>mainServlet</servlet-name>
+  <url-pattern>*.do</url-pattern>
+  </servlet-mapping>
+  
+  
+
+  
+    <!-- 过滤器 -->
+  <filter>
+  	<filter-name>loginFilter</filter-name>
+  	<filter-class>com.web.filter.LoginFilter</filter-class>
+  </filter>
+  
+  <filter-mapping>
+  	<filter-name>loginFilter</filter-name>
+  	<url-pattern>*.do</url-pattern>
+  </filter-mapping>
+  
+ <!-- 文件上传-->
+   <servlet>
+  <servlet-name>Fileupload</servlet-name>
+  <servlet-class>com.web.controller.FileuploadServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+  <servlet-name>Fileupload</servlet-name>
+  <url-pattern>/Fileupload</url-pattern>
+  </servlet-mapping>
+  
+ 
+  
+  </web-app>
