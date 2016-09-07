@@ -24,6 +24,7 @@ import com.web.entity.User;
 import com.web.model.UserModel;
 import com.web.model.impl.UserModelImpl;
 import com.web.util.Page;
+import com.web.vo.CustomerVo;
 import com.web.vo.DepartmentVo;
 import com.web.vo.MenuVo;
 import com.web.vo.MenuVo2;
@@ -57,26 +58,21 @@ public class MainServlet extends HttpServlet{
 			Method m = c.getMethod(methodName , HttpServletRequest.class,HttpServletResponse.class);
 			m.invoke(this, req,resp);
 		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
 	}
 	
 	/**
-	 * 登录界面  假如登录成功还要返回一个这个用户他所拥有的 菜单 并且把这个用户保存在session范围里面
+	 * 用户登录
 	 * @param req
 	 * @param resp
 	 * @throws ServletException
@@ -103,6 +99,19 @@ public class MainServlet extends HttpServlet{
 		resp.setCharacterEncoding("utf-8");
 		resp.getWriter().write(result);
 	}
+	
+	/**
+	 * 用户退出
+	 * @param req
+	 * @param resp
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	public void logout(HttpServletRequest req, HttpServletResponse resp)
+		throws ServletException, IOException{
+		resp.sendRedirect("view/login.jsp");
+	}
+	
 	
 	/**
 	 * 查询所有的用户（经理，主管，咨询师）这里已经查询到了所有的用户 还有一共多少行记录
@@ -164,6 +173,7 @@ public class MainServlet extends HttpServlet{
 	 */
 	public void addUser(HttpServletRequest req, HttpServletResponse resp)
 		throws ServletException, IOException{
+		String avatar = req.getParameter("viewImg");
 		String uNo = req.getParameter("uNo");
 		String userName = req.getParameter("userName");
 		String userPassWord = req.getParameter("userPassWord");
@@ -178,7 +188,7 @@ public class MainServlet extends HttpServlet{
 		String EntryTime = req.getParameter("EntryTime");
 		int iseffective = Integer.parseInt(req.getParameter("iseffective"));
 		int rid = Integer.parseInt(req.getParameter("rid"));
-		userModel.addUser(uNo, userName, userPassWord, realName, phone, email, QQ, weChatNo, emergencyContactPerson, emergencyContactPhone, did, EntryTime, iseffective, rid);
+		userModel.addUser(uNo, userName, userPassWord, realName, phone, avatar,email, QQ, weChatNo, emergencyContactPerson, emergencyContactPhone, did, EntryTime, iseffective, rid);
 		resp.setCharacterEncoding("utf-8");
 //		resp.getWriter().write("添加成功");
 //		resp.getWriter().flush();	
@@ -213,7 +223,30 @@ public class MainServlet extends HttpServlet{
 		resp.getWriter().write(JSONObject.fromObject(userVo2).toString());
 		resp.getWriter().flush();
 	}
-	
+	/**
+	 * 修改用户资料
+	 */
+	public void modifyUser(HttpServletRequest req, HttpServletResponse resp)
+	throws ServletException, IOException{
+		String uid = req.getParameter("uid");
+		String avatar = req.getParameter("viewImg");
+		String uNo = req.getParameter("uNo");
+		String userName = req.getParameter("userName");
+		String userPassWord = req.getParameter("userPassWord");
+		String realName = req.getParameter("realName");
+		String phone = req.getParameter("phone");
+		String email = req.getParameter("email");
+		String QQ = req.getParameter("QQ");
+		String weChatNo = req.getParameter("weChatNo");
+		String emergencyContactPerson = req.getParameter("emergencyContactPerson");
+		String emergencyContactPhone = req.getParameter("emergencyContactPhone");
+		int did = Integer.parseInt(req.getParameter("did"));
+		String EntryTime = req.getParameter("EntryTime");
+		int iseffective = Integer.parseInt(req.getParameter("iseffective"));
+		int rid = Integer.parseInt(req.getParameter("rid"));
+		userModel.modifyUser(uid,uNo, userName, userPassWord, realName, phone, avatar,email, QQ, weChatNo, emergencyContactPerson, emergencyContactPhone, did, EntryTime, iseffective, rid);
+		resp.setCharacterEncoding("utf-8");
+	}
 	/**
 	 * 查看所有的菜单
 	 */
@@ -442,6 +475,26 @@ public class MainServlet extends HttpServlet{
 		String[] pid = pids.split(",");
 		userModel.deleteProducts(pid);
 		resp.setCharacterEncoding("utf-8");
+	}
+	/**
+	 * 查看美容师个人客户（加载自己美容师的客户 通过传过去自己的uid去查询自己的客户）
+	 */
+	public void loadAllMyCustomers(HttpServletRequest req, HttpServletResponse resp)
+	throws ServletException, IOException{
+		String uid = req.getParameter("uid");
+		int pageNo =Integer.valueOf(req.getParameter("pageNo"));
+		int pageSize =Integer.valueOf(req.getParameter("pageSize"));
+		String sql=req.getParameter("sql");
+		Page<CustomerVo> page =userModel.loadAllMyCustomers(pageNo, pageSize,sql,uid);
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("rows", page.getDateList());
+		map.put("total", page.getTotal());
+		String josn=JSONObject.fromObject(map).toString();
+		
+		resp.setCharacterEncoding("utf-8");
+		resp.getWriter().write(josn);
+		resp.getWriter().flush();
+
 	}
 }
 

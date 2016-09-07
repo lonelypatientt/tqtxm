@@ -32,8 +32,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 <body class="easyui-layout">   
     <div data-options="region:'north',split:true" style="height:100px;" >
     	<div><img src="view/images/tqt_logo.png" style="float: left"/></div>
-    	<div id = "head" style="float: right"><span style="font-size: 20px;color: ">热烈欢迎你${user.userName}</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="logout.do?methodName=logout" style="font-size: 20px;text-decoration: none">安全退出</a> </div>
-   		<div><img src="<%=basePath%>files/${user.avatar}"    style="float: right"/></div>
+    	<div id = "head" style="float: right"><span style="font-size: 20px;color: ">热烈欢迎你,${user.userName}</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="logout.do?methodName=logout" style="font-size: 20px;text-decoration: none">安全退出</a> </div>
+   		<div><img src="${user.avatar}" style="float: right"  height="80px"/></div>
     </div>   
     <div data-options="region:'west',title:'菜单列表',split:true" style="width:200px;">
 		<div id="menu" class="easyui-accordion" style="width:300px;height:200px;" data-options="fit:true">   
@@ -57,7 +57,6 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
     <div data-options="region:'center'" style="padding:5px;background:#eee;">
 		<div id="tabs" class="easyui-tabs" style="width:500px;height:250px;" data-options="fit:true">   
 		    <div title="欢迎" style="padding:20px;">   
-		       	 热烈欢迎你！！唯一！！   
 		    </div> 
 		</div>  
     </div>   

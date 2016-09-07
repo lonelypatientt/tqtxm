@@ -12,6 +12,7 @@ import com.web.entity.Role;
 import com.web.entity.User;
 import com.web.model.UserModel;
 import com.web.util.Page;
+import com.web.vo.CustomerVo;
 import com.web.vo.DepartmentVo;
 import com.web.vo.MenuVo;
 import com.web.vo.UserVo;
@@ -62,10 +63,15 @@ public class UserModelImpl implements UserModel{
 	/**
 	 * 添加用户 并且添加此用户的角色
 	 */
-	public  void  addUser(String uNO,String userName,String userPassWord,String realName,String phone,String email,String  QQ,String weChatNo,String emergencyContactPerson,String emergencyContactPhone,int did,String EntryTime, int iseffective,int rid ){
-		userDao.addUser(uNO, userName, userPassWord, realName, phone, email, QQ, weChatNo, emergencyContactPerson, emergencyContactPhone, did, EntryTime, iseffective, rid);
+	public  void  addUser(String uNO,String userName,String userPassWord,String realName,String phone,String avatar,String email,String  QQ,String weChatNo,String emergencyContactPerson,String emergencyContactPhone,int did,String EntryTime, int iseffective,int rid ){
+		userDao.addUser(uNO, userName, userPassWord, realName, phone,avatar, email, QQ, weChatNo, emergencyContactPerson, emergencyContactPhone, did, EntryTime, iseffective, rid);
 	};
-
+	/**
+	 * 修改用户
+	 */
+	public  void  modifyUser(String uid,String uNO,String userName,String userPassWord,String realName,String phone,String avatar,String email,String  QQ,String weChatNo,String emergencyContactPerson,String emergencyContactPhone,int did,String EntryTime, int iseffective,int rid ){
+		userDao.modifyUser(uid,uNO, userName, userPassWord, realName, phone,avatar, email, QQ, weChatNo, emergencyContactPerson, emergencyContactPhone, did, EntryTime, iseffective, rid);
+	};
 	/**
 	 * 删除某个用户 或者一些用户 
 	 */
@@ -194,5 +200,11 @@ public class UserModelImpl implements UserModel{
 	 */
 	public void deleteProducts(String[] pid){
 		userDao.deleteProducts(pid);
+	};
+	/**
+	 * 查看美容师个人客户（加载自己美容师的客户 通过传过去自己的uid去查询自己的客户）
+	 */
+	public Page<CustomerVo> loadAllMyCustomers(int pageNo,int  pageSize ,String sql,String uid){
+		return userDao.loadAllMyCustomers(pageNo, pageSize,sql,uid);
 	};
 }

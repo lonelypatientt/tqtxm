@@ -24,18 +24,34 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	<script type="text/javascript">
 		$(function($) {
  			$('#dg').datagrid({  
-	   			url:'loadAllMenus.do?methodName=loadAllMenus&pageNo=1&pageSize=10',
+	   			url:'loadAllMyCustomers.do?methodName=loadAllMyCustomers&pageNo=1&pageSize=10&uid='+${user.uid}+'',
 	   		    pagination:true, //如果为true，则在DataGrid控件底部显示分页工具栏。
 	   		    frozenColumns:[[{field:'hhh',checkbox:true}]],   
 		    	columns:[[    
-			        {field:'mname',title:'菜单名字',width:100}, 
-			       	{field:'url',title:'菜单地址',width:100},    
-			        {field:'isshow',title:'是否展示',width:100},
-			        {field:'level',title:'菜单等级',width:100},
-			        {field:'parentName',title:'父级菜单',width:100},  
+			        {field:'interviewnumber',title:'预约号',width:100}, 
+			       	{field:'cname',title:'客户姓名',width:100},    
+			        {field:'csex',title:'性别',width:100,formatter: function(value,row,index){
+						if (value==1){
+							return '男';
+						} else {
+							return '女';
+						}
+					}},
+			        {field:'cphone1',title:'电话1',width:100},
+			        {field:'cphone2',title:'电话2',width:100}, 
+			        {field:'ciname',title:'客户来源（渠道）',width:100},  
+			        {field:'cqq',title:'QQ',width:100},  
+			        {field:'pname',title:'咨询产品',width:100},  
+			        {field:'uname',title:'咨询师',width:100},  
+			        {field:'firstdealmoney',title:'首次成交金额',width:100},  
+			        {field:'dealallmoney',title:'成交总金额',width:100},  
+			        {field:'address',title:'详细地址',width:100},  
+			        {field:'cometostoretime',title:'预计到店时间',width:100},  
+			        {field:'cometocustomertime',title:'预计回访时间',width:100},  
+			                   
 			    ]],
 			    toolbar: [{
-					text:'添加菜单',
+					text:'新增客户',
 					iconCls: 'icon-edit',
 					handler: function(){
 					$('#win').window("open")
@@ -125,12 +141,12 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			        width:600,    
 			        height:400,    
 			        modal:true,
-			        title:'添加菜单' ,
+			        title:'新增客户' ,
 			        closed:true,
 			        top:20, 
 			});
 			
-			 //弹出修改菜单的那个窗口 
+			 //弹出增加客户的那个窗口 
 			$('#modify').window({    
 			        width:600,    
 			        height:400,    
@@ -140,11 +156,17 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			        top:20, 
 			});		
 			
-			//加载所有的一级 和 二级菜单（相对于数据里面的来说）  用于下拉菜单
-			$('.parentName').combobox({    
-			    url:'toAddMenu.do?methodName=toAddMenu',    
-			    valueField:'mid',    
-			    textField:'mname'   
+			//加载所有的渠道  用于下拉菜单
+			$('#ciname').combobox({    
+			    url:'loadAllChannels.do?methodName=loadAllChannels',    
+			    valueField:'ciid',    
+			    textField:'ciname'   
+			});
+			//加载所有的咨询产品  用于下拉菜单
+			$('#pname').combobox({    
+			    url:'loadAllProducts.do?methodName=loadAllProducts',    
+			    valueField:'pid',    
+			    textField:'pname'   
 			});
 			
 		});//-------------------------------------------------------------------加载
@@ -186,33 +208,92 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
   <body>
    	  <table id="dg"></table> 
    	   
-   	   <!--添加菜单--> 
+   	   <!--新增客户--> 
    	  <div id="win">
-   	  	<form  id="addMenu">
+   	  	<form  id="addCustomer">
    	  		<table>
 	    		<tr>
-	    			<td style="width:130px">菜单名称：</td>
-	    			<td><input name="mname" class="easyui-validatebox" data-options="required:true" id="mname"/></td>
+	    			<td style="width:130px">预约号：</td>
+	    			<td><input name="interviewnumber" class="easyui-validatebox" data-options="required:true" id="interviewnumber"/></td>
 	    		</tr>
 	    		<tr>
-	    			<td>菜单地址：</td>
-	    			<td><input name="url" class="easyui-validatebox" data-options="required:true" id="url"/></td>
+	    			<td>客户姓名：</td>
+	    			<td><input name="cname" class="easyui-validatebox" data-options="required:true" id="cname"/></td>
 	    		</tr>
 	    		<tr>
-	    			<td>是否展示：</td>
+	    			<td>性别：</td>
 	    			<td>
-	    				<select  class="easyui-combobox" name="isshow" style="width:150px;" id="isshow">   
-							<option value="1">是</option>
-							<option value="0">否</option>
+	    				<select  class="easyui-combobox" name="csex" style="width:150px;" id="csex">   
+							<option value="1">男</option>
+							<option value="2">女</option>
 						</select> 
 	    			</td>
 	    		</tr>
 	    		<tr>
-	    			<td>父级菜单名字：</td>
+	    			<td>电话1：</td>
 	    			<td>
-	    				<input id="parentName"  name="parentName" style="width:150px;"  class="parentName" value="请选择父级菜单"/>
+	    				<input id="cphone1"  name="cphone1" style="width:150px;"  class="easyui-validatebox" />
 	    			</td>
 	    		</tr>
+	    		<tr>
+	    			<td>电话2：</td>
+	    			<td>
+	    				<input id="cphone12"  name="cphone12" style="width:150px;"  class="easyui-validatebox" />
+	    			</td>
+	    		</tr>
+	    		<tr>
+	    			<td>客户来源（渠道）：</td>
+	    			<td>
+	    				<input class="easyui-combobox" name="ciname" style="width:150px;" id="ciname" value="请选择来源渠道"/> 
+	    			</td>
+	    		</tr>
+	    		<tr>
+	    			<td>QQ：</td>
+	    			<td>
+	    				<input id="cqq"  name="cqq" style="width:150px;"  class="easyui-validatebox" />
+	    			</td>
+	    		</tr>
+	    		<tr>
+	    			<td>咨询产品：</td>
+	    			<td>
+	    				<input id="pname"  name="pname" style="width:150px;"  class="easyui-combobox" value="请选择咨询的产品"/>
+	    			</td>
+	    		</tr>
+	    		<tr>
+	    			<td>咨询师：</td>
+	    			<td>
+	    				<input id="uname"  name="uname" style="width:150px;"  class="easyui-combobox" value="请选择咨询的美容师"/>
+	    			</td>
+	    		</tr>
+	    		<tr>
+	    			<td>首次成交金额：</td>
+	    			<td>
+	    				<input id="firstdealmoney"  name="firstdealmoney" style="width:150px;"  class="easyui-validatebox" />
+	    			</td>
+	    		</tr>
+	    		<tr>
+	    			<td>成交总金额：</td>
+	    			<td>
+	    				<input id="dealallmoney"  name="dealallmoney" style="width:150px;"  class="easyui-validatebox" />
+	    			</td>
+	    		</tr>
+	    			<tr>
+	    			<td>详细地址：</td>
+	    			<td>
+	    				<input id="address"  name="address" style="width:150px;"  class="easyui-validatebox"/>
+	    			</td>
+	    		</tr>
+	    		<tr>
+	    			<td>预计到店时间：</td>
+	    			<td>
+	    				<input id="cometostoretime"  name="cometostoretime" style="width:150px;"  class="easyui-datetimebox"/>
+	    			</td>
+	    		</tr>
+	    			<tr>
+	    			<td>预计回访时间：</td>
+	    			<td>
+	    				<input id="cometocustomertime"  name="cometocustomertime" style="width:150px;"  class="easyui-datetimebox" />
+	    			</td>
 	    		<tr>
 	    			<td ><a href="javascript:void(0);" onclick="addMenu();" class="easyui-linkbutton" data-options="iconCls:'icon-undo'" style="margin-left: 40px;">添加</a> </td>
 	    		</tr>

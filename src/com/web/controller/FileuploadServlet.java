@@ -60,8 +60,8 @@ public class FileuploadServlet extends HttpServlet {
 							//String sql = "insert into user (avatar) values ()";
 							
 							
-							System.out.println("laile ------------------");
 							
+							req.setAttribute("savaPath", savaPath);
 							req.setAttribute("fileuploadmsg", "文件上传成功");
 						}else{
 							req.setAttribute("fileuploadmsg", "文件格式不能超过1zhao");
@@ -79,7 +79,7 @@ public class FileuploadServlet extends HttpServlet {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		req.getRequestDispatcher("view/fileupload.jsp").forward(req, resp);
+		//req.getRequestDispatcher("view/fileupload.jsp").forward(req, resp);
 	}
 		
 }

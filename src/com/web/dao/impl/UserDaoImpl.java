@@ -13,6 +13,7 @@ import com.web.entity.Role;
 import com.web.entity.User;
 import com.web.util.DBUtil;
 import com.web.util.Page;
+import com.web.vo.CustomerVo;
 import com.web.vo.DepartmentVo;
 import com.web.vo.MenuVo;
 import com.web.vo.UserVo;
@@ -107,10 +108,13 @@ public class UserDaoImpl implements UserDao {
 	/**
 	 * 添加用户 并且添加此用户的角色 
 	 */
-	public  void  addUser(String uNo,String userName,String userPassWord,String realName,String phone,String email,String  QQ,String weChatNo,String emergencyContactPerson,String emergencyContactPhone,int did,String EntryTime, int iseffective,int rid ){
+	public  void  addUser(String uNo,String userName,String userPassWord,String realName,String phone,String avatar,String email,String  QQ,String weChatNo,String emergencyContactPerson,String emergencyContactPhone,int did,String EntryTime, int iseffective,int rid ){
 			String sql = "INSERT into  user (uNo,userName,userPassWord,realName,phone,avatar,email,QQ,weChatNo,emergencyContactPerson" +
 						",emergencyContactPhone,did,EntryTime,iseffective)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-			Object[]m={uNo,userName,userPassWord,realName,phone,"#",email,QQ,weChatNo,emergencyContactPerson,emergencyContactPhone,did,EntryTime,iseffective};
+			if(avatar.length()==0){
+				avatar="http://localhost/tqtxm/upload/moren.jpg";
+			}
+			Object[]m={uNo,userName,userPassWord,realName,phone,avatar,email,QQ,weChatNo,emergencyContactPerson,emergencyContactPhone,did,EntryTime,iseffective};
 			//插入用户的数据
 			DBUtil.DML(sql, m);
 			//查询插入的这个用户的uid
@@ -149,16 +153,22 @@ public class UserDaoImpl implements UserDao {
 		sql = "select * from user u where u.uid = ?";
 		Object[]m=DBUtil.DQL(sql, new Object[]{uid}).get(0);
 		//创建一个uservo2
-		UserVo2 userVo2= new UserVo2((Integer)m[0], String.valueOf(m[1]), String.valueOf(m[2]), String.valueOf(m[3]), String.valueOf(m[4]), String.valueOf(m[5]), String.valueOf(m[6]), String.valueOf(m[7]), String.valueOf(m[8]), String.valueOf(m[9]), String.valueOf(m[10]), String.valueOf(m[11]), (Integer)m[12], String.valueOf(m[13]), (Integer)m[14], rid);
-		//得到这个用户的资料后就删除他的各种资料删除这个用户的user 和 他 对应的角色
-		sql = "delete from user  where uid = ?";
-		DBUtil.DML(sql, new Object[]{uid});
-		sql = "delete from userrole  where uid = ?";
-		DBUtil.DML(sql, new Object[]{uid});
-		
+		UserVo2 userVo2= new UserVo2((Integer)m[0], String.valueOf(m[1]), String.valueOf(m[2]), String.valueOf(m[3]), String.valueOf(m[4]), String.valueOf(m[5]), String.valueOf(m[6]), String.valueOf(m[7]), String.valueOf(m[8]), String.valueOf(m[9]), String.valueOf(m[10]), String.valueOf(m[11]), (Integer)m[12], String.valueOf(m[13]), (Integer)m[14], rid);	
 		return userVo2;
 	};
-	
+	/**
+	 * 添加用户 并且添加此用户的角色 
+	 */
+	public  void  modifyUser(String uid,String uNo,String userName,String userPassWord,String realName,String phone,String avatar,String email,String  QQ,String weChatNo,String emergencyContactPerson,String emergencyContactPhone,int did,String EntryTime, int iseffective,int rid ){
+			String sql = "UPDATE user u set u.uNo=? ,u.userName=?,u.userPassWord=?,u.realName=?,u.phone=?,u.avatar=?,u.email=?,u.QQ=?,u.weChatNo=?,u.emergencyContactPerson=?,u.emergencyContactPhone=?,u.did=?,u.EntryTime=?,u.iseffective=?  where u.uid=?";
+			Object[]m={uNo,userName,userPassWord,realName,phone,avatar,email,QQ,weChatNo,emergencyContactPerson,emergencyContactPhone,did,EntryTime,iseffective,uid};
+			//插入用户的数据
+			DBUtil.DML(sql, m);
+			//修改该用户的角色
+			sql = "UPDATE userrole ur set  ur.rid = ? where ur.uid = ?";
+			DBUtil.DML(sql, new Object[]{rid,uid});
+			
+	}
 	/**
 	 * 返回一个所有的菜单集合
 	 * @param 
@@ -349,4 +359,28 @@ public class UserDaoImpl implements UserDao {
 			DBUtil.DML(sql, new Object[]{m});
 		}
 	};
+	/**
+	 * 查看美容师个人客户（加载自己美容师的客户 通过传过去自己的uid去查询自己的客户）
+	 */
+	public Page<CustomerVo> loadAllMyCustomers(int pageNo,int  pageSize ,String sql,String uid){
+		String sql1 = "SELECT c.cid, c.interviewnumber,c.cname,c.csex,c.cphone1,c.cphone2,(SELECT ci.ciname from channelinfo ci WHERE c.ciid = ci.ciid ), c.cqq ,(SELECT p.pname from product p WHERE p.pid=c.pid  ),(SELECT u.username from user u where u.uid=?),c.firstdealmoney ,c.dealallmoney,c.address,c.cometostoretime,c.cometocustomertime   from customer c where  c.uid = ? ";
+		String sql2=" limit ?,?";
+		String sql3;
+		if(sql !=null&&sql.length()>0){
+			 sql3=sql1+sql+sql2;
+		}else{
+			 sql3=sql1+sql2;
+		}
+		List<Object[]> list = DBUtil.DQL(sql3, new Object[]{uid,uid,(pageNo-1)*pageSize,pageSize});
+		List<CustomerVo> dateList= new ArrayList<CustomerVo>();
+		for(Object[] n : list){
+			CustomerVo customerVo = new CustomerVo((Integer)n[0], String.valueOf(n[1]), String.valueOf(n[2]), (Integer)n[3],  String.valueOf(n[4]),  String.valueOf(n[5]),  String.valueOf(n[6]),  String.valueOf(n[7]),  String.valueOf(n[8]),  String.valueOf(n[9]),  String.valueOf(n[10]),  String.valueOf(n[11]),  String.valueOf(n[12]),  String.valueOf(n[13]), String.valueOf(n[14]));
+			dateList.add(customerVo);
+		 }
+		
+		sql = "select count(*) from customer c ";
+		list=DBUtil.DQL(sql,null);
+		long total = (Long)list.get(0)[0];
+		return new Page<CustomerVo>(pageNo, pageSize, dateList, total);
+	}
 }

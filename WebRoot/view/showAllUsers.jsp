@@ -21,6 +21,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	<script type="text/javascript" src="<%=basePath%>view/js/jquery-1.9.1.min.js"></script>
 	<script type="text/javascript" src="<%=basePath%>easyui/jquery.easyui.min.js"></script>
 	<script type="text/javascript" src="<%=basePath%>easyui/locale/easyui-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="<%=basePath%>view/js/ajaxfileupload.js"></script>
 	<script type="text/javascript">
 		$(function($) {
  			$('#dg').datagrid({  
@@ -179,6 +180,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			 userPassWord :$("#userPassWord").val(),
 			 realName     :$("#realName2").val(),
 			 phone        :$("#phone2").val(),
+			 viewImg      :$("#viewImg")[0].src,
 			 email        :$("#email").val(),
 			 QQ           :$("#QQ").val(),
 			 weChatNo     :$("#weChatNo").val(),
@@ -199,7 +201,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		//-------------------------------
 		//ajax异步提交执行将修改后的资料重新放回数据库
 		function modifyUser(){
-			$.post("addUser.do?methodName=addUser", { 
+			$.post("modifyUser.do?methodName=modifyUser", { 
+			 uid          :$('#dg').datagrid('getSelections')[0].uid,
 			 uNo          :$("#uNo3").val(),
 			 userName     :$("#userName3").val(),
 			 userPassWord :$("#userPassWord3").val(),
@@ -229,8 +232,26 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			     console.log(data.time); //  2pm
 			   }, "json");
 		}
-		
-		
+		//上传头像
+		function ajaxFileUpload() {
+			$.ajaxFileUpload({
+				url : 'upload',
+				secureuri : false,
+				fileElementId : 'fileToUpload',
+				dataType : 'json',
+				data : {username : $("#username").val()},
+				success : function(data, status) {
+					$('#viewImg').attr('src',data.picUrl);
+					alert("成功");
+				},
+				error : function(data, status, e) {
+					alert('上传出错');
+			}
+		})
+
+		return false;
+
+	}
 		
 			
 	</script>
@@ -243,10 +264,14 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
    	  <a id="btn" href="javascript:query()"  class="easyui-linkbutton" data-options="iconCls:'icon-search'">查询</a> 
    	   
    	  <table id="dg"></table>  
-   	  
+
    	   <!--添加用户-->
    	  <div id="win">
-  	  	<form  id="addUser" method="post">
+   	  	<label>上传头像：</label>
+ 			<input id="fileToUpload" type="file" size="45" name="fileToUpload" class="input">
+				<button class="button" onclick="ajaxFileUpload()">上传</button><br>
+			<img id="viewImg">
+  	  <form  id="addUser" method="post">
 	    	<table>
 	    		<tr>
 	    			<td style="width:130px">员工工号：</td>
@@ -268,7 +293,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	    			<td>手机号：</td>
 	    			<td><input name="phone" class="easyui-validatebox" data-options="required:false" id="phone2"/></td>
 	    		</tr>
-	
+	    
 	    		<tr>
 	    			<td>邮箱：</td>
 	    			<td><input name="email" class="easyui-textbox" data-options="required:false"  id="email"></td>
@@ -319,14 +344,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	    			<td ><a href="javascript:void(0);" onclick="addUser();" class="easyui-linkbutton" data-options="iconCls:'icon-adduser'" style="margin-left: 40px;">添加</a> </td>
 	    		</tr>
 	    	</table>
-    	</form>
-    	
-		<form action="javascript:fileupload()" method="post" enctype="multipart/form-data" >
-		   	<input type="text" name="submit-name" ><br />
-		    <input type="file" name="files"><br />
-		    <input type="submit" value="上传">
-		</form>
-  	  </div>
+    </form>
+ </div>
    	  
    	  <!--修改用户资料-->
    	  <div id="modify">

@@ -9,6 +9,7 @@ import com.web.entity.Product;
 import com.web.entity.Role;
 import com.web.entity.User;
 import com.web.util.Page;
+import com.web.vo.CustomerVo;
 import com.web.vo.DepartmentVo;
 import com.web.vo.MenuVo;
 import com.web.vo.UserVo;
@@ -61,8 +62,26 @@ public interface UserModel {
 	 * @param iseffective
 	 * @param rid
 	 */
-	public  void  addUser(String uNO,String userName,String userPassWord,String realName,String phone,String email,String  QQ,String weChatNo,String emergencyContactPerson,String emergencyContactPhone,int did,String EntryTime, int iseffective,int rid );
+	public  void  addUser(String uNO,String userName,String userPassWord,String realName,String phone,String avatar,String email,String  QQ,String weChatNo,String emergencyContactPerson,String emergencyContactPhone,int did,String EntryTime, int iseffective,int rid );
 
+	/**
+	 * 修改用户
+	 * @param uNO
+	 * @param userName
+	 * @param userPassWord
+	 * @param realName
+	 * @param phone
+	 * @param email
+	 * @param QQ
+	 * @param weChatNo
+	 * @param emergencyContactPerson
+	 * @param emergencyContactPhone
+	 * @param did
+	 * @param EntryTime
+	 * @param iseffective
+	 * @param rid
+	 */
+	public  void  modifyUser(String uid,String uNO,String userName,String userPassWord,String realName,String phone,String avatar,String email,String  QQ,String weChatNo,String emergencyContactPerson,String emergencyContactPhone,int did,String EntryTime, int iseffective,int rid );
 	/**
 	 * 删除某个用户 或者一些用户 
 	 */
@@ -151,4 +170,9 @@ public interface UserModel {
 	 * 删除某个产品或者一些产品
 	 */
 	public void deleteProducts(String[] pid);
+	/**
+	 * 查看美容师个人客户（加载自己美容师的客户 通过传过去自己的uid去查询自己的客户）
+	 */
+	public Page<CustomerVo> loadAllMyCustomers(int pageNo,int  pageSize ,String sql,String uid);
+	
 }
